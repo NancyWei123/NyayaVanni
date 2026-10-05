@@ -46,11 +46,7 @@ function SeverityBadge({ level }) {
   );
 }
 
-function DropZone({ label, file, onFile, onClear, gradientFrom, gradientTo }) {
-  const inputRef = useRef(null);
-  const [dragging, setDragging] = useState(false);
-  const [dragError, setDragError] = useState(false);
-  const allowedTypes = [
+const allowedTypes = [
   "application/pdf",
   "image/png",
   "image/jpeg",
@@ -60,24 +56,29 @@ const isValidFile = (file) => {
   return file && allowedTypes.includes(file.type);
 };
 
+function DropZone({ label, file, onFile, onClear, gradientFrom, gradientTo }) {
+  const inputRef = useRef(null);
+  const [dragging, setDragging] = useState(false);
+  const [dragError, setDragError] = useState(false);
+
   const handleDrop = useCallback(
-  (e) => {
-    e.preventDefault();
-    setDragging(false);
+    (e) => {
+      e.preventDefault();
+      setDragging(false);
 
-    const dropped = e.dataTransfer.files[0];
-    if (!dropped) return;
+      const dropped = e.dataTransfer.files[0];
+      if (!dropped) return;
 
-    if (!isValidFile(dropped)) {
-      setDragError(true);
-      return;
-    }
+      if (!isValidFile(dropped)) {
+        setDragError(true);
+        return;
+      }
 
-    setDragError(false);
-    onFile(dropped);
-  },
-  [onFile]
-);
+      setDragError(false);
+      onFile(dropped);
+    },
+    [onFile]
+  );
 
   return (
     <div
