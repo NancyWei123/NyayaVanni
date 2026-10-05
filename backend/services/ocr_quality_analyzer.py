@@ -5,7 +5,7 @@ validation on an extracted document and its optional source image, returning a
 single quality report used by the analysis pipeline.
 """
 
-from typing import Any, Dict, Optional
+from typing import Any
 
 from .blur_detector import estimate_blur
 from .confidence_scorer import compute_confidence
@@ -14,8 +14,8 @@ from .skew_detector import estimate_skew
 
 
 def analyze_ocr_quality(
-    text: str, image_bytes: Optional[bytes] = None
-) -> Dict[str, Any]:
+    text: str, image_bytes: bytes | None = None
+) -> dict[str, Any]:
     """Assess OCR quality of an extracted document.
 
     Args:
@@ -32,7 +32,7 @@ def analyze_ocr_quality(
 
     validation = validate_readability(text, score, stats)
 
-    report: Dict[str, Any] = {
+    report: dict[str, Any] = {
         "score": score,
         "level": confidence["level"],
         "stats": stats,

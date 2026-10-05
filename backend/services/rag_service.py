@@ -219,7 +219,7 @@ def retrieve_relevant_laws(query_text: str, k=2) -> list:
         )
 
         query_vec = np.array([query_embed["embedding"]], dtype=np.float32)
-        distances, indices = index.search(query_vec, k)
+        _distances, indices = index.search(query_vec, k)
 
         results = [
             legal_corpus[i] for i in indices[0] if i != -1 and i < len(legal_corpus)

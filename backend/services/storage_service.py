@@ -7,11 +7,10 @@ import sqlite3
 import threading
 import uuid
 from datetime import datetime, timedelta, timezone
-from typing import Optional
 
 from .database import connect_db
-from .search_service import clear_expired_cache
 from .encryption_service import get_encryption_service
+from .search_service import clear_expired_cache
 
 logger = logging.getLogger(__name__)
 
@@ -289,7 +288,7 @@ def upload_to_local(file_bytes: bytes, filename: str) -> tuple[str, str]:
                 os.remove(local_path)
             except OSError:
                 pass
-        raise e
+        raise
 
 
 def save_document_record(session_id: str, doc_id: str, filename: str, local_path: str):
@@ -313,7 +312,7 @@ def save_document_record(session_id: str, doc_id: str, filename: str, local_path
             conn.close()
 
 
-def get_document_record(doc_id: str) -> Optional[dict]:
+def get_document_record(doc_id: str) -> dict | None:
     """Retrieve document metadata from SQLite"""
     conn = None
     try:
@@ -333,7 +332,7 @@ def get_document_record(doc_id: str) -> Optional[dict]:
             conn.close()
 
 
-def read_document_file(doc_id: str) -> Optional[bytes]:
+def read_document_file(doc_id: str) -> bytes | None:
     """
     Safely read and decrypt a document file.
     Returns the decrypted file content as bytes, or None if not found/failed.
@@ -549,7 +548,7 @@ def save_cached_analysis(
             conn.close()
 
 
-def get_cached_analysis(doc_id: str, session_id: str, language: str) -> Optional[dict]:
+def get_cached_analysis(doc_id: str, session_id: str, language: str) -> dict | None:
     """Return cached analysis for a document+session+language tuple, or None if absent."""
     conn = None
     try:

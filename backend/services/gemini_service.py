@@ -2,12 +2,9 @@ import json
 import logging
 import os
 import re
-from datetime import date
-from typing import List, Literal, Optional
 
 import google.generativeai as genai
 from dotenv import load_dotenv
-from pydantic import BaseModel, Field
 
 from ..models.llm_schemas import DocumentAnalysis
 
@@ -83,7 +80,7 @@ def _parse_structured_response(resp) -> dict:
         return resp
 
     # If response exposes a json() method (common for requests-like objects)
-    if hasattr(resp, "json") and callable(getattr(resp, "json")):
+    if hasattr(resp, "json") and callable(resp.json):
         try:
             data = resp.json()
             if isinstance(data, dict):
@@ -138,7 +135,7 @@ def analyze_document_with_gemini(
     document_text: str,
     retrieved_laws: list,
     language: str = "en",
-    timeout: Optional[float] = None,
+    timeout: float | None = None,
 ) -> dict:
     """
     Analyze a legal document using the Gemini generative model.
@@ -235,7 +232,7 @@ def generate_chat_response(
     chat_history: list,
     user_message: str,
     language: str = "en",
-    timeout: Optional[float] = None,
+    timeout: float | None = None,
 ) -> str:
     """
     Generate a conversational response using the Gemini chat model.
@@ -306,7 +303,7 @@ def stream_chat_response(
     chat_history: list,
     user_message: str,
     language: str = "en",
-    timeout: Optional[float] = None,
+    timeout: float | None = None,
 ):
     """
 Stream a conversational legal response using the Gemini chat model.

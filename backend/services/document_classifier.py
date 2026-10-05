@@ -2,10 +2,9 @@ import json
 import logging
 import os
 import re
-from typing import Dict, List
 
 import google.generativeai as genai
-from google.api_core.exceptions import DeadlineExceeded
+
 from .gemini_service import GEMINI_TIMEOUT
 
 logger = logging.getLogger(__name__)
@@ -62,7 +61,7 @@ def _validate_classification_input(text: str) -> str:
     return text
 
 
-def _heuristic_classify(text: str) -> Dict:
+def _heuristic_classify(text: str) -> dict:
     """Fallback heuristic-based classifier."""
     text_lower = text.lower()
     scores = {doc: 0 for doc in DOCUMENT_TYPES}
@@ -106,7 +105,7 @@ def _heuristic_classify(text: str) -> Dict:
     }
 
 
-def classify_document(text: str) -> Dict:
+def classify_document(text: str) -> dict:
     """
     AI-powered document classifier using Gemini 1.5 Flash.
     Falls back to heuristic model on failure.

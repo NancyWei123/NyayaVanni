@@ -4,7 +4,7 @@ Combines the OCR confidence score with missing-page / blank-page heuristics to
 decide whether the extracted text is fit for AI legal analysis.
 """
 
-from typing import Any, Dict, List
+from typing import Any
 
 # Scores below this block AI analysis of the document.
 BLOCK_THRESHOLD = 50.0
@@ -16,13 +16,13 @@ _BLANK_LINE_PATTERN_COUNT = 3
 
 
 def validate_readability(
-    text: str, score: float, stats: Dict[str, Any] | None = None
-) -> Dict[str, Any]:
+    text: str, score: float, stats: dict[str, Any] | None = None
+) -> dict[str, Any]:
     """Validate whether extracted text is usable for legal analysis.
 
     Returns dict with `valid`, `blocked`, `level` and a list of `warnings`.
     """
-    warnings: List[str] = []
+    warnings: list[str] = []
     stats = stats or {}
 
     if not text or len(text.strip()) < _MIN_DOCUMENT_CHARS:

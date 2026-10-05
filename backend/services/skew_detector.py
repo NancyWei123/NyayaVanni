@@ -8,7 +8,7 @@ Pillow + numpy (existing dependencies). Safe fallback when no image is given.
 import io
 import logging
 import math
-from typing import Dict, Any
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -33,9 +33,9 @@ def _binarize(image_bytes: bytes):
     return (arr < threshold).astype(float)
 
 
-def estimate_skew(image_bytes: bytes) -> Dict[str, Any]:
+def estimate_skew(image_bytes: bytes) -> dict[str, Any]:
     """Estimate page skew and detect rotated/landscape uploads."""
-    result: Dict[str, Any] = {
+    result: dict[str, Any] = {
         "skew_detected": None,
         "skew_angle": 0.0,
         "rotated": False,

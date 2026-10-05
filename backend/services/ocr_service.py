@@ -1,6 +1,5 @@
 import io
 import logging
-import os
 import re
 import zipfile
 
@@ -48,10 +47,7 @@ def is_invalid_extracted_text(text: str) -> bool:
     special_chars = len(re.findall(r"[^\w\s]", cleaned))
     unicode_chars = len(re.findall(r"[\u0900-\u0FFF\u0B80-\u0BFF\u0C00-\u0C7F\u0C80-\u0CFF\u0D00-\u0D7F\u0D80-\u0DFF]", cleaned))
 
-    if len(cleaned) > 0 and unicode_chars == 0 and (special_chars / len(cleaned)) > 0.40:
-        return True
-
-    return False
+    return bool(len(cleaned) > 0 and unicode_chars == 0 and special_chars / len(cleaned) > 0.4)
 
 
 def preprocess_image_for_ocr(img: Image.Image) -> Image.Image:

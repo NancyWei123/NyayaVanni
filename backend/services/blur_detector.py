@@ -7,7 +7,7 @@ or out-of-focus scan. Uses Pillow + numpy, which are existing dependencies.
 
 import io
 import logging
-from typing import Dict, Any
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -30,9 +30,9 @@ def _to_gray_array(image_bytes: bytes):
     return np.asarray(img, dtype=float)
 
 
-def estimate_blur(image_bytes: bytes) -> Dict[str, Any]:
+def estimate_blur(image_bytes: bytes) -> dict[str, Any]:
     """Return blur metrics for an image. Safe fallback when no image provided."""
-    result: Dict[str, Any] = {
+    result: dict[str, Any] = {
         "blur_detected": None,
         "variance_of_laplacian": None,
         "message": "Image quality checks skipped (no image bytes provided).",

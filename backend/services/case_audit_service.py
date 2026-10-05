@@ -9,7 +9,6 @@ procedural requirements.
 import logging
 import sqlite3
 from datetime import datetime, timezone
-from typing import Dict, List, Optional, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -62,9 +61,9 @@ def record_status_change(
     db_path: str,
     case_id: str,
     new_status: str,
-    previous_status: Optional[str] = None,
-    changed_by: Optional[str] = None,
-    reason: Optional[str] = None,
+    previous_status: str | None = None,
+    changed_by: str | None = None,
+    reason: str | None = None,
 ) -> bool:
     """Record a case status change in the audit trail.
 
@@ -115,7 +114,7 @@ def record_status_change(
 
 def get_case_status_history(
     db_path: str, case_id: str, page: int = 1, page_size: int = 50
-) -> Tuple[List[Dict], int]:
+) -> tuple[list[dict], int]:
     """Retrieve paginated status change history for a case.
 
     Returns a reverse-chronological list of status changes with pagination,
@@ -172,7 +171,7 @@ def get_case_status_history(
 
 def get_time_in_status(
     db_path: str, case_id: str, status: str
-) -> Optional[Dict]:
+) -> dict | None:
     """Calculate how long a case was in a specific status.
 
     Args:
@@ -215,7 +214,7 @@ def get_time_in_status(
 
 def get_cases_by_update_range(
     db_path: str, start_date: str, end_date: str, page: int = 1, page_size: int = 50
-) -> Tuple[List[str], int]:
+) -> tuple[list[str], int]:
     """Get paginated case IDs that were modified within a date range.
 
     Useful for audit reports and compliance checks.

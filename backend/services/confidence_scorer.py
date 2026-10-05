@@ -7,13 +7,13 @@ quality degrades (fragmented words, garbage characters, missing punctuation).
 """
 
 import re
-from typing import Any, Dict
+from typing import Any
 
 WORD_RE = re.compile(r"[a-zA-Z0-9]+")
 SENTENCE_SPLIT_RE = re.compile(r"[.!?]+")
 
 
-def _stats(text: str) -> Dict[str, Any]:
+def _stats(text: str) -> dict[str, Any]:
     words = WORD_RE.findall(text)
     total_chars = len(text.strip())
     if not words or total_chars == 0:
@@ -39,7 +39,7 @@ def _stats(text: str) -> Dict[str, Any]:
     }
 
 
-def compute_confidence(text: str) -> Dict[str, Any]:
+def compute_confidence(text: str) -> dict[str, Any]:
     """Compute a 0-100 OCR confidence score and quality level."""
     stats = _stats(text)
     if stats["words"] == 0 or stats["total_chars"] < 20:

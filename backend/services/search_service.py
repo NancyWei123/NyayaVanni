@@ -11,7 +11,7 @@ import logging
 import re
 import sqlite3
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # Regex patterns for common Indian PII that should be redacted from search results
 PII_PATTERNS = [
@@ -169,7 +169,7 @@ def search_documents(
     page_size: int = 10,
     use_cache: bool = True,
     session_id: str = "",
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Search documents using full-text search with caching.
 
@@ -209,8 +209,7 @@ def search_documents(
             "error": f"Query exceeds maximum length of {MAX_SEARCH_QUERY_LENGTH} characters",
         }
 
-    if page < 1:
-        page = 1
+    page = max(page, 1)
     if page_size < 1 or page_size > 100:
         page_size = 10
 
@@ -289,7 +288,7 @@ def search_documents(
         return {"results": [], "total_count": 0, "error": str(e), "from_cache": False}
 
 
-def _get_cached_result(query_hash: str) -> Optional[Dict[str, Any]]:
+def _get_cached_result(query_hash: str) -> dict[str, Any] | None:
     """Retrieve cached search result if not expired."""
     if not DB_PATH:
         return None
@@ -337,7 +336,7 @@ def _get_cached_result(query_hash: str) -> Optional[Dict[str, Any]]:
 def _cache_result(
     query_hash: str,
     query: str,
-    response: Dict[str, Any],
+    response: dict[str, Any],
     page: int,
     page_size: int,
     total_count: int,

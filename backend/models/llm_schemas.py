@@ -1,5 +1,5 @@
 from datetime import date
-from typing import List, Literal, Optional
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
@@ -28,12 +28,12 @@ class DocumentAnalysis(BaseModel):
     document_type: str = Field(
         description="Type of document (e.g., FIR, Notice, Contract, etc.)"
     )
-    parties: List[Party]
-    dates: List[DateEntry]
-    sections: List[str] = Field(
+    parties: list[Party]
+    dates: list[DateEntry]
+    sections: list[str] = Field(
         description="Extract explicit legal sections/laws from Document, or apply from Relevant Laws"
     )
-    clauses: List[str] = Field(
+    clauses: list[str] = Field(
         description="Extract key clauses/obligations from Document"
     )
     summary: str = Field(
@@ -41,6 +41,6 @@ class DocumentAnalysis(BaseModel):
     )
     risk_level: Literal["Low", "Medium", "High"]
     urgency: Literal["Immediate", "Soon", "Normal"]
-    consequences: List[str] = Field(description="List of potential outcomes")
+    consequences: list[str] = Field(description="List of potential outcomes")
     recommended_timeline: str = Field(description="e.g., Respond within X days")
-    actions: List[ActionItem]
+    actions: list[ActionItem]

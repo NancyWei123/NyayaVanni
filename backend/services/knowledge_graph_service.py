@@ -1,6 +1,5 @@
 import re
 import uuid
-from typing import Dict, List
 
 
 class LegalKnowledgeGraphBuilder:
@@ -12,7 +11,7 @@ class LegalKnowledgeGraphBuilder:
     def __init__(self):
         pass
 
-    def extract_entities(self, text: str) -> Dict:
+    def extract_entities(self, text: str) -> dict:
         """
         Extract structured legal entities using regex and keyword heuristics.
 
@@ -119,18 +118,18 @@ class LegalKnowledgeGraphBuilder:
         # Remove duplicates
         for key in entities:
             entities[key] = list(
-                set(
-                    [
+                {
+                    
                         item.strip()
                         for item in entities[key]
                         if item and isinstance(item, str)
-                    ]
-                )
+                    
+                }
             )
 
         return entities
 
-    def build_relationships(self, entities: Dict) -> List[Dict]:
+    def build_relationships(self, entities: dict) -> list[dict]:
         """
         Build graph edges between extracted legal entities.
 
@@ -183,7 +182,7 @@ class LegalKnowledgeGraphBuilder:
 
         return relationships
 
-    def generate_graph(self, text: str) -> Dict:
+    def generate_graph(self, text: str) -> dict:
         """
         Generate a complete knowledge graph from legal document text.
 

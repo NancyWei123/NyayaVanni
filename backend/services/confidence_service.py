@@ -1,4 +1,3 @@
-from typing import List
 
 import google.generativeai as genai
 import numpy as np
@@ -11,7 +10,7 @@ class ConfidenceService:
         words = text.strip().split()
         if len(words) < 10:
             return 0.0
-        unique_ratio = len(set(w.lower() for w in words)) / len(words)
+        unique_ratio = len({w.lower() for w in words}) / len(words)
         avg_word_len = sum(len(w) for w in words) / len(words)
         if avg_word_len < 2 or unique_ratio < 0.2:
             return 0.0

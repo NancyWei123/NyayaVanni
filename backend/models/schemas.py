@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -10,9 +10,9 @@ class ChatMessage(BaseModel):
 
 class ChatRequest(BaseModel):
     user_message: str = Field(..., min_length=1, max_length=10000)
-    chat_history: List[ChatMessage]
+    chat_history: list[ChatMessage]
     language: str = Field(default="en", max_length=10)
-    document_analysis: Optional[Dict[str, Any]] = None
+    document_analysis: dict[str, Any] | None = None
 
 
 class ChatResponse(BaseModel):

@@ -48,7 +48,7 @@ def validate_file_magic_bytes(file_bytes: bytes, expected_ext: str) -> bool:
 
 
 def detect_actual_mime(file_bytes: bytes) -> str | None:
-    for ext, sig in MAGIC_BYTES.items():
+    for sig in MAGIC_BYTES.values():
         offset = sig["offset"]
         expected = sig["bytes"]
         if len(file_bytes) >= offset + len(expected):

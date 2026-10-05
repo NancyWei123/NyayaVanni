@@ -26,6 +26,7 @@ app = FastAPI(title="NyayaVanni API", description="Legal Document Analyzer API")
 app.add_middleware(LimitUploadSizeMiddleware, max_upload_size=11 * 1024 * 1024)
 
 from .services.search_service import init_search_service
+
 # Initialize search service with full-text indexing
 from .services.storage_service import DB_PATH as STORAGE_DB_PATH
 
@@ -74,7 +75,7 @@ async def validation_exception_handler(request, exc):
 
 @app.exception_handler(Exception)
 async def unhandled_exception_handler(request, exc):
-    logger.error(f"Unhandled exception: {exc}", exc_info=True)
+    logger.error(f"Unhandled exception: {exc}")
     return JSONResponse(
         status_code=500,
         content={

@@ -1,12 +1,11 @@
 import base64
 import logging
 import os
-from typing import Tuple
 
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +19,7 @@ ITERATIONS = 100000
 class EncryptionService:
     """Service for encrypting and decrypting document data using AES-256-GCM."""
 
-    def __init__(self, master_key: str = None):
+    def __init__(self, master_key: str | None = None):
         self.master_key = master_key or os.getenv('DOCUMENT_ENCRYPTION_KEY')
         if not self.master_key:
             raise ValueError(
@@ -110,6 +109,6 @@ class EncryptionService:
             raise
 
 
-def get_encryption_service(master_key: str = None) -> EncryptionService:
+def get_encryption_service(master_key: str | None = None) -> EncryptionService:
     """Factory function to get an EncryptionService instance."""
     return EncryptionService(master_key)

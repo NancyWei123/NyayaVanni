@@ -6,43 +6,56 @@ import os
 import uuid
 
 import google.generativeai as genai
-from fastapi import (APIRouter, Depends, File, HTTPException, Request,
-                     Response, UploadFile)
+from fastapi import (
+    APIRouter,
+    File,
+    HTTPException,
+    Request,
+    Response,
+    UploadFile,
+)
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 from reportlab.lib.pagesizes import letter
-from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.pdfgen import canvas
-from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
 from slowapi.errors import RateLimitExceeded
 
+from ..config.rate_limits import (
+    CONTACT_RATE_LIMIT,
+    DELETE_RATE_LIMIT,
+    SEARCH_RATE_LIMIT,
+    UPLOAD_RATE_LIMIT,
+)
 from ..middleware.rate_limit import limiter
-
-from ..config.rate_limits import (CONTACT_RATE_LIMIT, DELETE_RATE_LIMIT,
-                                  SEARCH_RATE_LIMIT, UPLOAD_RATE_LIMIT)
 from ..models.schemas import ChatRequest, ChatResponse, ContactRequest
 from ..services.confidence_service import ConfidenceService
 from ..services.document_classifier import classify_document
-from ..services.file_validation import (detect_actual_mime,
-                                        validate_file_magic_bytes)
-from ..services.gemini_service import (GEMINI_TIMEOUT,
-                                       analyze_document_with_gemini,
-                                       generate_chat_response,
-                                       stream_chat_response)
+from ..services.file_validation import detect_actual_mime, validate_file_magic_bytes
+from ..services.gemini_service import (
+    GEMINI_TIMEOUT,
+    analyze_document_with_gemini,
+    generate_chat_response,
+    stream_chat_response,
+)
 from ..services.knowledge_graph_service import LegalKnowledgeGraphBuilder
 from ..services.ocr_quality_analyzer import analyze_ocr_quality
 from ..services.ocr_service import extract_document
 from ..services.rag_service import retrieve_relevant_laws
-from ..services.search_service import (index_document,
-                                       remove_document_from_index,
-                                       search_documents)
-from ..services.storage_service import (UPLOAD_DIR, create_session_id,
-                                        delete_document_and_cache,
-                                        get_cached_analysis,
-                                        get_document_record,
-                                        save_cached_analysis,
-                                        save_document_record, upload_to_local,
-                                        validate_session)
+from ..services.search_service import (
+    index_document,
+    remove_document_from_index,
+    search_documents,
+)
+from ..services.storage_service import (
+    UPLOAD_DIR,
+    create_session_id,
+    delete_document_and_cache,
+    get_cached_analysis,
+    get_document_record,
+    save_cached_analysis,
+    save_document_record,
+    validate_session,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -330,8 +343,8 @@ async def upload_document(request: Request, file: UploadFile = File(...), respon
         save_document_record(session_id, doc_id, filename, local_path)
         return {"documentId": doc_id, "message": "Uploaded successfully"}
 
-    except HTTPException as http_err:
-        raise http_err
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("Unexpected upload error: %s", e, exc_info=True)
         raise HTTPException(
@@ -415,7 +428,7 @@ def _analyze_document_sync(
             try:
                 with open(record["local_path"], "rb") as f:
                     contents = f.read()
-            except IOError:
+            except OSError:
                 raise HTTPException(
                     status_code=500, detail="Failed to read document from storage"
                 )
@@ -489,8 +502,8 @@ def _analyze_document_sync(
 
     except RateLimitExceeded:
         raise
-    except HTTPException as http_err:
-        raise http_err
+    except HTTPException:
+        raise
     except ValueError as val_err:
         logger.error("ValueError in analysis: %s", val_err, exc_info=True)
         raise HTTPException(
@@ -502,10 +515,12 @@ def _analyze_document_sync(
             status_code=404, detail="Requested document file not found on storage."
         )
     except Exception as e:
-        from google.api_core.exceptions import (DeadlineExceeded,
-                                                GoogleAPIError,
-                                                InvalidArgument,
-                                                ResourceExhausted)
+        from google.api_core.exceptions import (
+            DeadlineExceeded,
+            GoogleAPIError,
+            InvalidArgument,
+            ResourceExhausted,
+        )
 
         logger.error(f"Analysis failed: {e}")
 
@@ -667,8 +682,8 @@ def _analyze_text_sync(request: Request, text: str, language: str = "en"):
 
     except RateLimitExceeded:
         raise
-    except HTTPException as http_err:
-        raise http_err
+    except HTTPException:
+        raise
     except ValueError as val_err:
         logger.error("ValueError in text analysis: %s", val_err, exc_info=True)
         raise HTTPException(
@@ -718,7 +733,7 @@ def _analyze_text_sync(request: Request, text: str, language: str = "en"):
 @api_router.get("/chat/stream")
 @limiter.limit(RATE_LIMIT_CHAT)
 def chat_stream_sse(
-    request: Request, user_message: str, language: str = "en", document_id: str = None, response: Response = None
+    request: Request, user_message: str, language: str = "en", document_id: str | None = None, response: Response = None
 ):
     """Stream chat responses as Server-Sent Events (SSE).
 
@@ -802,7 +817,7 @@ def chat_general(request: Request, chat_request: ChatRequest, response: Response
 
     except RateLimitExceeded:
         raise
-    except HTTPException as http_err:
+    except HTTPException:
         raise
     except Exception as e:
         logger.error(f"General chat failed: {e}")
@@ -845,8 +860,8 @@ def chat_with_document(request: Request, document_id: str, chat_request: ChatReq
 
     except RateLimitExceeded:
         raise
-    except HTTPException as http_err:
-        raise http_err
+    except HTTPException:
+        raise
 
     except Exception as e:
         logger.error(f"Chat failed for document {document_id}: {e}")
@@ -893,8 +908,8 @@ async def diff_analysis(
 
     except RateLimitExceeded:
         raise
-    except HTTPException as http_err:
-        raise http_err
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Diff analysis failed: {e}")
         raise HTTPException(status_code=500, detail="Diff analysis failed")
@@ -967,8 +982,8 @@ Provide a JSON response matching this exact schema:
 
     except RateLimitExceeded:
         raise
-    except HTTPException as http_err:
-        raise http_err
+    except HTTPException:
+        raise
     except DeadlineExceeded as e:
         logger.error(f"Diff analysis timed out: {e}")
         raise HTTPException(status_code=504, detail="Diff analysis request timed out.")
@@ -995,7 +1010,7 @@ def generate_document(request: Request, payload: DocumentGenerationRequest, resp
         HTTPException 500: If PDF generation fails.
     """
     try:
-        session_id = require_session_id(request)
+        require_session_id(request)
 
         buffer = io.BytesIO()
         c = canvas.Canvas(buffer, pagesize=letter)
@@ -1047,8 +1062,8 @@ def generate_document(request: Request, payload: DocumentGenerationRequest, resp
             media_type="application/pdf",
             headers={"Content-Disposition": 'attachment; filename="NDA_Document.pdf"'},
         )
-    except HTTPException as http_err:
-        raise http_err
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Failed to generate document: {e}")
         raise HTTPException(status_code=500, detail="Failed to generate document")
@@ -1118,8 +1133,7 @@ def search_documents_endpoint(
                 status_code=400, detail="Search query must be at least 2 characters"
             )
 
-        if page < 1:
-            page = 1
+        page = max(page, 1)
         if page_size < 1 or page_size > 100:
             page_size = 10
 
@@ -1136,8 +1150,8 @@ def search_documents_endpoint(
 
         return result
 
-    except HTTPException as http_err:
-        raise http_err
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Search failed: {e}")
         raise HTTPException(status_code=500, detail="Search operation failed")

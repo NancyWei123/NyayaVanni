@@ -7,7 +7,6 @@ configurable work factor. Follows OWASP guidelines for password storage.
 import logging
 import os
 import secrets
-from typing import Optional
 
 import bcrypt
 
