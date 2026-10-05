@@ -21,7 +21,6 @@ import ThemeToggle from '../components/ThemeToggle';
 import LanguageToggle from '../components/LanguageToggle';
 import Footer from '../components/Footer';
 import HistorySidebar from '../components/HistorySidebar';
-import { ARIA_LABELS } from '../constants';
 
 const SUGGESTED_QUESTIONS = [
   'What is the difference between a lease and a license agreement?',
